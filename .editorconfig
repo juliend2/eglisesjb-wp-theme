@@ -1,0 +1,36 @@
+# EditorConfig for WordPress block theme
+# https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+indent_style = space
+indent_size = 2
+
+# PHP (WordPress prefers tabs for PHP)
+[*.php]
+indent_style = tab
+indent_size = 4
+
+# JSON, YAML, Markdown
+[*.{json,yml,yaml,md}]
+indent_style = space
+indent_size = 2
+
+# CSS, SCSS, JS, JSX, TS, TSX
+[*.{css,scss,js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+
+# HTML and block templates
+[*.{html,htm,twig,php}]
+insert_final_newline = true
+
+# Don’t trim trailing whitespace in Markdown (needed for line breaks)
+[*.md]
+trim_trailing_whitespace = false
