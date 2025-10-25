@@ -11,6 +11,8 @@ if ( ! isset ( $content_width) ) {
     $content_width = SJB_MAX_WIDTH;
 }
 
+require_once __DIR__.'/lib/MenuWalker.php';
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  Setup:
 */
@@ -24,12 +26,10 @@ if ( ! isset ( $content_width) ) {
  * for some features, such as indicating support post thumbnails.
  */
 function sjb_setup() {
-
-
 	/**
- * Make theme available for translation.
- * Translations can be placed in the /languages/ directory.
- */
+	 * Make theme available for translation.
+	 * Translations can be placed in the /languages/ directory.
+	 */
 	load_theme_textdomain( SJB_THEME_SLUG, get_template_directory() . '/languages' );
 
 	/**

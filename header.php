@@ -32,7 +32,14 @@
                 </div>
                 <div class="rd-navbar-main-element">
                   <div class="rd-navbar-nav-wrap" id="rd-navbar-nav-wrap-1">
-				  	<?php wp_nav_menu(); ?>
+				  	<?php
+					wp_nav_menu([
+						'walker' => new MenuWalker(),
+						'theme_location' => 'primary', // make sure you’ve registered it
+						'container'      => false,
+						'menu_class'     => 'rd-navbar-nav',
+					]);
+					?>
                     <!-- RD Navbar Nav-->
 					<?php  /*
                               <ul class="rd-navbar-nav">
