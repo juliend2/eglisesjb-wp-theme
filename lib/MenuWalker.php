@@ -11,6 +11,8 @@ class MenuWalker extends Walker_Nav_Menu {
 
     // Start element (the <li> + <a>)
     function start_el(  &$output, $item, $depth = 0, $args = array(), $id = 0  ) {
+		$target = str_contains($item->url, 'https://') ? '_blank' : '_self';
+
         $indent = ( $depth ) ? str_repeat("\t", $depth) : '';
 
         // Determine classes
@@ -29,6 +31,7 @@ class MenuWalker extends Walker_Nav_Menu {
         $atts = array();
         $atts['href'] = ! empty( $item->url ) ? $item->url : '';
         $atts['class'] = $link_class;
+		$atts['target'] = $target;
 
         $attributes = '';
         foreach ( $atts as $attr => $value ) {
