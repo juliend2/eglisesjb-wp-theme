@@ -18,6 +18,7 @@
 <div class="page">
 	<?php get_template_part('partials/menu', 'top') ?>
 
+ACCUEIL
 	  <?php /*
     <h1><?php bloginfo('name'); ?></h1>
     <nav>

@@ -3,7 +3,7 @@
  * Template Name: Accueil
  * Template Post Type: page
  */
-get_header();
+get_header('accueil');
 
 if ( have_posts() ):
   while ( have_posts() ) : the_post();
