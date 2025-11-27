@@ -112,3 +112,31 @@ function sjb_breadcrumb_nav($current_post_id) {
 	return $html;
 }
 
+/**
+ * This is a hack to put make a condition trigger in the siteorigin filters.
+ * If there is no attribute, it won't take into account the
+ * siteorigin_panels_row_style_classes filter. (see below)
+ */
+add_filter('siteorigin_panels_row_style_attributes', function ($attr) {
+	return [...$attr, 'data-trigger'=>'houba'];
+});
+
+/**
+ * The structure of the main section of the page is supposed to be:
+ *	.section > .container
+ * So here we add section and a couple others.
+ */
+add_filter('siteorigin_panels_row_classes', function ($classes) {
+	// Append the classes that are needed at this point in the DOM:
+	return [...$classes, 'section', 'section-lg', 'bg-white'];
+});
+
+/**
+ * The structure of the main section of the page is supposed to be:
+ *	.section > .container
+ */
+add_filter('siteorigin_panels_row_style_classes', function ($classes) {
+	// Append the classes that are needed at this point in the DOM:
+	return [...$classes, 'container'];
+});
+
