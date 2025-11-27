@@ -100,3 +100,15 @@ function sjb_enqueue_assets() {
 	);
 }
 add_action('wp_enqueue_scripts', 'sjb_enqueue_assets');
+
+
+function sjb_breadcrumb_nav($current_post_id) {
+	global $post;
+	$html = '<li><a href="'.get_home_url().'">Accueil</a></li>';
+	if ($post->post_parent) {
+		$html .= '<li><a href="'.get_permalink($post->post_parent).'">'.get_the_title($post->post_parent).'</a></li>';
+	}
+	$html .= '<li class="active">'.get_the_title($current_post_id).'</li>';
+	return $html;
+}
+

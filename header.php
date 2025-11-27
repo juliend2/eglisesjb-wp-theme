@@ -18,6 +18,22 @@
 <div class="page">
 	<?php get_template_part('partials/menu', 'top') ?>
 
+	<section class="breadcrumbs-custom bg-image context-dark" style="background-color: #192531; background-image: url(images/sjb-slide-easter.jpg);">
+	  <div class="breadcrumbs-custom-inner">
+		<div class="container breadcrumbs-custom-container">
+		<div class="breadcrumbs-custom-main">
+			<?php if ($post->post_parent): ?>
+			  <h6 class="breadcrumbs-custom-subtitle title-decorated"><?= get_the_title($post->post_parent) ?></h6>
+			<?php endif ?>
+		  <h1 class="breadcrumbs-custom-title"><?php the_title() ?></h1>
+		</div>
+		<ul class="breadcrumbs-custom-path">
+		  <?= sjb_breadcrumb_nav(get_the_ID()) ?>
+		</ul>
+		</div>
+	  </div>
+	</section>
+
 	  <?php /*
     <h1><?php bloginfo('name'); ?></h1>
     <nav>
