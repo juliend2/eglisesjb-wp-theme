@@ -1,0 +1,39 @@
+.text-accent-dark {
+	color: #1C2647;
+}
+
+.list-marked {
+	text-align: left;
+}
+
+.list-marked > li {
+	text-indent: -25px;
+	padding-left: 25px;
+}
+
+.list-marked > li::before {
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	left: 25px;
+	min-width: 25px;
+	content: '\f14f';
+	font: 400 14px 'Material Design Icons';
+	line-height: inherit;
+	color: #aeb1be;
+}
+.list-marked > li > a[href] {
+  /* Pour éviter que les liens se voient partiellement désactivés
+     par le ::before qui est malencontreusement placé par dessus ceux-cis */
+  z-index: 2; /* place par dessus la puce */
+  position: relative; /* "active" le z-index */
+}
+
+.list-marked > li + li {
+	margin-top: 9px;
+}
+
+* + .list-marked {
+	margin-top: 15px;
+}
+

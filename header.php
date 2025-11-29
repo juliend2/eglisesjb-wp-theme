@@ -18,7 +18,8 @@
 <div class="page">
 	<?php get_template_part('partials/menu', 'top') ?>
 
-	<section class="breadcrumbs-custom bg-image context-dark" style="background-color: #192531; background-image: url(images/sjb-slide-easter.jpg);">
+	<section class="breadcrumbs-custom bg-image context-dark"
+	    style="background-color: #192531; background-image: url(<?php echo get_the_post_thumbnail_url(get_the_ID(), 'full') ?: get_template_directory_uri() . '/images/sjb-header-fallback.jpg'; ?>);">
 	  <div class="breadcrumbs-custom-inner">
 		<div class="container breadcrumbs-custom-container">
 		<div class="breadcrumbs-custom-main">
