@@ -1,6 +1,6 @@
 <?php
 
-get_header();
+get_header('blogue');
 ?>
 <section class="section section-lg">
         <div class="container">
