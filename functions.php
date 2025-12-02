@@ -102,11 +102,15 @@ function sjb_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'sjb_enqueue_assets');
 
 
-function sjb_breadcrumb_nav($current_post_id) {
+function sjb_breadcrumb_nav($current_post_id, $section = null) {
 	global $post;
 	$html = '<li><a href="'.get_home_url().'">Accueil</a></li>';
 	if ($post->post_parent) {
 		$html .= '<li><a href="'.get_permalink($post->post_parent).'">'.get_the_title($post->post_parent).'</a></li>';
+	}
+	if ($section === 'article') {
+		$blog_page_id = get_option('page_for_posts');
+		$html .= '<li><a href="'.get_permalink($blog_page_id).'">'.get_the_title($blog_page_id).'</a></li>';
 	}
 	$html .= '<li class="active">'.get_the_title($current_post_id).'</li>';
 	return $html;
