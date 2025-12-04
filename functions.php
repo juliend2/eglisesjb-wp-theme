@@ -225,3 +225,15 @@ function quote_modern_shortcode($atts, $content = null) {
 }
 add_shortcode('quote_modern', 'quote_modern_shortcode');
 
+/**
+ * Make sure we don't have the 'page' class on body which breaks the scrolling
+ *
+ * @param string[] $classes
+ * @return void
+ */
+function remove_body_class($classes) {
+    // Remove specific class by name
+    $classes = array_diff($classes, array('page'));
+    return $classes;
+}
+add_filter('body_class', 'remove_body_class');
