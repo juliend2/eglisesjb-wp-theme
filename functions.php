@@ -116,6 +116,9 @@ function sjb_breadcrumb_nav($current_post_id, $section = null) {
 	return $html;
 }
 
+
+/* SiteOrigin reconciliation * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 /**
  * This is a hack to put make a condition trigger in the siteorigin filters.
  * If there is no attribute, it won't take into account the
@@ -125,15 +128,25 @@ add_filter('siteorigin_panels_row_style_attributes', function ($attr) {
 	return [...$attr, 'data-trigger'=>'houba'];
 });
 
+add_filter('siteorigin_panels_layout_classes', function ($classes) {
+	return [...$classes, 'section', 'section-lg'];
+});
+
 /**
  * The structure of the main section of the page is supposed to be:
  *	.section > .container
  * So here we add section and a couple others.
  */
-add_filter('siteorigin_panels_row_classes', function ($classes) {
+add_filter('siteorigin_panels_row_classes', function ($classes, $row) {
 	// Append the classes that are needed at this point in the DOM:
-	return [...$classes, 'section', 'section-lg', 'bg-white'];
-});
+	$added = ['section', 'section-lg'];
+	if (isset($row['cells'][0]['widgets'][0]['blocs_historiques'])) {
+		$added[] = 'bg-gray-800';
+	} else {
+		$added[] = 'bg-white';
+	}
+	return [...$classes, ...$added];
+}, 10, 2); // callback accepts 2 arguments
 
 /**
  * The structure of the main section of the page is supposed to be:
@@ -144,6 +157,7 @@ add_filter('siteorigin_panels_row_style_classes', function ($classes) {
 	return [...$classes, 'container'];
 });
 
+/* END SiteOrigin reconciliation  * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * Styles dans TinyMCE
@@ -237,3 +251,12 @@ function remove_body_class($classes) {
     return $classes;
 }
 add_filter('body_class', 'remove_body_class');
+
+
+/*
+ * SiteOrigin Widgets registration
+ */
+add_filter( 'siteorigin_widgets_widget_folders', function( $folders ){
+	$folders[] = get_template_directory() . '/lib/widgets/';
+	return $folders;
+});
