@@ -132,6 +132,11 @@ add_filter('siteorigin_panels_layout_classes', function ($classes) {
 	return [...$classes, 'section', 'section-lg'];
 });
 
+
+function cell_is_question_contact($row) {
+	return isset($row['cells'][0]['widgets'][0]['panels_info']['style']['id']) && $row['cells'][0]['widgets'][0]['panels_info']['style']['id'] === 'questions-contact-cta';
+}
+
 /**
  * The structure of the main section of the page is supposed to be:
  *	.section > .container
@@ -140,12 +145,22 @@ add_filter('siteorigin_panels_layout_classes', function ($classes) {
 add_filter('siteorigin_panels_row_classes', function ($classes, $row) {
 	// Append the classes that are needed at this point in the DOM:
 	$added = ['section', 'section-lg'];
-	if (isset($row['cells'][0]['widgets'][0]['blocs_historiques'])) {
+	if (cell_is_question_contact($row)) {
+		$added = array_diff($added, ['section-lg']); // remove section-lg
+		$added = [...$added, 'section-sm', 'text-center', 'bg-image context-dark'];
+	} elseif (isset($row['cells'][0]['widgets'][0]['blocs_historiques'])) {
 		$added[] = 'bg-gray-800';
 	} else {
 		$added[] = 'bg-white';
 	}
 	return [...$classes, ...$added];
+}, 10, 2); // callback accepts 2 arguments
+
+add_filter('siteorigin_panels_row_attributes', function ($attrs, $row) {
+	if (cell_is_question_contact($row)) {
+		$attrs['style'] = 'background-image: url('.get_template_directory_uri().'/images/image-fond-mince.jpg);';
+	}
+	return $attrs;
 }, 10, 2); // callback accepts 2 arguments
 
 /**
