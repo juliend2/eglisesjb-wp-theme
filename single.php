@@ -27,6 +27,9 @@ while ( have_posts() ) : the_post();
                 <?php the_content() ?>
 				</article>
 			  </div>
+			  <div class="col-lg-4">
+				<?php get_sidebar('blog'); ?>
+			  </div>
 			</div>
 		</div>
 	</section>

@@ -275,3 +275,129 @@ add_filter( 'siteorigin_widgets_widget_folders', function( $folders ){
 	$folders[] = get_template_directory() . '/lib/widgets/';
 	return $folders;
 });
+
+
+// ------------------------------------------------
+// User Profile Custom Fields
+// ------------------------------------------------
+
+/**
+ * Add custom user meta field to profile screen
+ */
+function sjb_add_user_meta_fields($user) {
+    ?>
+    <h3><?php _e("Social Profiles", "sjb"); ?></h3>
+
+    <table class="form-table">
+        <tr>
+            <th><label for="profession"><?php _e("Profession"); ?></label></th>
+            <td>
+                <input type="text"
+                       name="profession"
+                       id="profession"
+                       value="<?php echo esc_attr(get_the_author_meta('profession', $user->ID)); ?>"
+                       class="regular-text"
+                /><br />
+                <span class="description">Enter your profession</span>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('show_user_profile', 'sjb_add_user_meta_fields'); // For your own profile
+add_action('edit_user_profile', 'sjb_add_user_meta_fields'); // For other users
+
+/**
+ * Save custom user meta field
+ */
+function sjb_save_user_meta_fields($user_id) {
+    // Check capability
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    update_user_meta($user_id, 'profession', sanitize_text_field($_POST['profession']));
+}
+add_action('personal_options_update', 'sjb_save_user_meta_fields');
+add_action('edit_user_profile_update', 'sjb_save_user_meta_fields');
+
+
+/**
+ * Add a profile image upload field to user profiles
+ */
+function sjb_add_user_image_field($user) {
+    $image_id = get_user_meta($user->ID, 'profile_image_id', true);
+    $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+    ?>
+    <h3><?php _e("Profile Picture", "sjb"); ?></h3>
+
+    <table class="form-table">
+        <tr>
+            <th><label for="profile_image"><?php _e("Profile Image"); ?></label></th>
+            <td>
+                <div id="profile-image-wrapper">
+                    <?php if ($image_url): ?>
+                        <img src="<?php echo esc_url($image_url); ?>" alt="Profile Image" style="max-width: 100px; display: block; margin-bottom: 10px;">
+                    <?php endif; ?>
+                </div>
+
+                <input type="hidden" name="profile_image_id" id="profile_image_id" value="<?php echo esc_attr($image_id); ?>" />
+
+                <button type="button" class="button" id="upload_profile_image_button">Upload Image</button>
+                <button type="button" class="button" id="remove_profile_image_button">Remove</button>
+
+                <p class="description">Upload or select a profile image.</p>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+    jQuery(document).ready(function($) {
+        var frame;
+        $('#upload_profile_image_button').on('click', function(e) {
+            e.preventDefault();
+            if (frame) { frame.open(); return; }
+
+            frame = wp.media({
+                title: 'Select or Upload Profile Image',
+                button: { text: 'Use this image' },
+                multiple: false
+            });
+
+            frame.on('select', function() {
+                var attachment = frame.state().get('selection').first().toJSON();
+                $('#profile_image_id').val(attachment.id);
+                $('#profile-image-wrapper').html('<img src="' + attachment.sizes.thumbnail.url + '" style="max-width:100px; display:block; margin-bottom:10px;">');
+            });
+
+            frame.open();
+        });
+
+        $('#remove_profile_image_button').on('click', function() {
+            $('#profile_image_id').val('');
+            $('#profile-image-wrapper').html('');
+        });
+    });
+    </script>
+    <?php
+}
+add_action('show_user_profile', 'sjb_add_user_image_field');
+add_action('edit_user_profile', 'sjb_add_user_image_field');
+
+
+function sjb_save_user_image_field($user_id) {
+    if (!current_user_can('edit_user', $user_id)) return false;
+    update_user_meta($user_id, 'profile_image_id', intval($_POST['profile_image_id']));
+}
+add_action('personal_options_update', 'sjb_save_user_image_field');
+add_action('edit_user_profile_update', 'sjb_save_user_image_field');
+
+
+function sjb_enqueue_user_image_uploader($hook) {
+    // Load only on user profile edit screens
+    if (in_array($hook, ['profile.php', 'user-edit.php'], true)) {
+        wp_enqueue_media(); // this loads wp.media and dependencies
+        wp_enqueue_script('jquery');
+    }
+}
+add_action('admin_enqueue_scripts', 'sjb_enqueue_user_image_uploader');
