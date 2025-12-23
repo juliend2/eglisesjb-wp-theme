@@ -12,6 +12,7 @@ if ( ! isset ( $content_width) ) {
 }
 
 require_once __DIR__.'/lib/MenuWalker.php';
+require_once __DIR__.'/lib/benevolat/benevolat.php';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  Setup:
