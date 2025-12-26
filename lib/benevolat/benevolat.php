@@ -1,6 +1,5 @@
 <?php
 
-
 function sjb_benevolat_register_post_type() {
 	$args = [
 		'label'  => esc_html__( 'Postes de bénévolat', 'text-domain' ),
@@ -23,7 +22,7 @@ function sjb_benevolat_register_post_type() {
 		],
 		'public'              => true,
 		'exclude_from_search' => false,
-		'publicly_queryable'  => false,
+		'publicly_queryable'  => true,
 		'show_ui'             => true,
 		'show_in_nav_menus'   => false,
 		'show_in_admin_bar'   => true,
