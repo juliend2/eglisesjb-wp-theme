@@ -100,3 +100,101 @@ function benevolat_list_shortcode($atts) {
     return ob_get_clean();
 }
 add_shortcode('benevolat_list', 'benevolat_list_shortcode');
+
+
+// Customiser les fields du formulaire de commentaire
+add_filter('comment_form_default_fields', function ($fields) {
+    $fields['author'] = str_replace(
+        '<input id="author"',
+        '<input id="author" class="form-input"',
+        $fields['author']
+    );
+
+	$fields['email'] = str_replace(
+        '<input id="email"',
+        '<input id="email" class="form-input"',
+        $fields['email']
+    );
+
+	unset($fields['url']);
+	unset($fields['cookies']);
+
+    return $fields;
+});
+
+// Set les bonnes classes pour le bouton d'envoi de commentaire
+
+add_filter('comment_form_submit_button', function ($submit_button) {
+    $submit_button = str_replace(
+        'class="submit"',
+        'class="button button-primary button-winona"',
+        $submit_button
+    );
+
+    return $submit_button;
+});
+
+
+
+add_filter('comment_form_default_fields', function ($fields) {
+    $fields['phone'] = '<p class="comment-form-phone">' .
+        '<label for="phone">' . __('Téléphone') . ' </label>' .
+        '<input id="phone" name="phone" type="tel" class="form-input" value="" size="30" />' .
+        '</p>';
+
+    return $fields;
+});
+
+add_action('comment_post', function ($comment_id) {
+    if (isset($_POST['phone']) && !empty($_POST['phone'])) {
+        $phone = sanitize_text_field($_POST['phone']);
+        add_comment_meta($comment_id, 'phone', $phone);
+    }
+});
+
+add_filter('comment_text', function ($comment_text) {
+    $comment_id = get_comment_ID();
+    $phone = get_comment_meta($comment_id, 'phone', true);
+
+    if ($phone) {
+        $comment_text .= '<p class="comment-phone"><strong>Téléphone:</strong> ' . esc_html($phone) . '</p>';
+    }
+
+    return $comment_text;
+});
+
+
+// Ajouter la colonne "Type de post"d ans la liste des commentaires
+add_filter('manage_edit-comments_columns', function ($columns) {
+    // Ajouter la colonne après la colonne "En réponse à"
+    $new_columns = array();
+    foreach ($columns as $key => $value) {
+        $new_columns[$key] = $value;
+        if ($key === 'response') {
+            $new_columns['post_type'] = __('Type de post');
+        }
+    }
+    return $new_columns;
+});
+
+// Afficher le contenu de la colonne
+add_action('manage_comments_custom_column', 'display_post_type_column', 10, 2);
+function display_post_type_column($column, $comment_id) {
+    if ($column === 'post_type') {
+        $comment = get_comment($comment_id);
+        $post_id = $comment->comment_post_ID;
+
+        if ($post_id) {
+            $post_type = get_post_type($post_id);
+            $post_type_obj = get_post_type_object($post_type);
+
+            if ($post_type_obj) {
+                echo esc_html($post_type_obj->labels->singular_name);
+            } else {
+                echo esc_html($post_type);
+            }
+        } else {
+            echo '—';
+        }
+    }
+}
