@@ -198,3 +198,42 @@ function display_post_type_column($column, $comment_id) {
         }
     }
 }
+
+// Gestion du spam
+
+add_filter('comment_form_default_fields', function ($fields) {
+    // 1. Honeypot
+    $fields['honeypot'] = '<p style="position:absolute;left:-9999px;">
+        <input type="text" name="website_url" value="" />
+    </p>';
+
+    // 2. Timestamp checking
+    $fields['timestamp'] = '<input type="hidden" name="comment_time" value="' . time() . '" />';
+
+    return $fields;
+});
+
+add_filter('preprocess_comment', function ($commentdata) {
+	$seconds_threshold = 6;
+
+    // Vérifier honeypot
+    if (!empty($_POST['website_url'])) {
+        wp_die('Error SP4M-0001');
+    }
+
+    // Vérifier vitesse
+    if (isset($_POST['comment_time'])) {
+        $elapsed = time() - intval($_POST['comment_time']);
+        if ($elapsed < $seconds_threshold) {
+            wp_die('Error SP4M-0002. Whoah, pas si vite!');
+        }
+    }
+
+    // Bloquer si trop de liens
+    if (substr_count($commentdata['comment_content'], 'http') > 2) {
+        wp_die('Error SP4M-0003. Essayez de mettre moins de liens dans le commentaire.');
+    }
+
+    return $commentdata;
+});
+
