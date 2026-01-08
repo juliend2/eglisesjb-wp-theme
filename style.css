@@ -3542,15 +3542,18 @@ a.post-tiny-media:hover::before {
 	}
 }
 
-.post-creative > img {
+.post-creative > img,
+.post-creative > p > img {
 	width: 100%;
 }
 
-.post-creative > * + img {
+.post-creative > * + img,
+.post-creative > * + p:has(> img) {
 	margin-top: 25px;
 }
 
-.post-creative > img + * {
+.post-creative > img + *,
+.post-creative > p:has(> img) + * {
 	margin-top: 25px;
 }
 
