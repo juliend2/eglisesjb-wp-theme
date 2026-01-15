@@ -134,8 +134,6 @@ add_filter('comment_form_submit_button', function ($submit_button) {
     return $submit_button;
 });
 
-
-
 add_filter('comment_form_default_fields', function ($fields) {
     $fields['phone'] = '<p class="comment-form-phone">' .
         '<label for="phone">' . __('Téléphone') . ' </label>' .
@@ -237,3 +235,112 @@ add_filter('preprocess_comment', function ($commentdata) {
     return $commentdata;
 });
 
+
+// NOTES INTERNES -------------------------------------------------
+
+/**
+ * 1. AJOUTER LA "META BOX" (BOÎTE D'ÉDITION)
+ * Cela ajoute un bloc dans la page d'édition d'un commentaire dans l'admin.
+ */
+function sjb_ajouter_metabox_comment_admin() {
+    add_meta_box(
+        'sjb_comment_note_interne',      // ID de la boîte
+        'Note Interne (Admin seulement)', // Titre de la boîte
+        'sjb_afficher_metabox_comment',   // Fonction qui affiche le HTML (voir ci-dessous)
+        'comment',                        // Écran où l'afficher (commentaires)
+        'normal',                         // Contexte
+        'high'                            // Priorité
+    );
+}
+add_action( 'add_meta_boxes', 'sjb_ajouter_metabox_comment_admin' );
+
+/**
+ * 2. AFFICHER LE CHAMP HTML DANS LA BOÎTE
+ */
+function sjb_afficher_metabox_comment( $comment ) {
+    // Récupérer la valeur actuelle si elle existe
+    $note_actuelle = get_comment_meta( $comment->comment_ID, 'sjb_note_interne', true );
+
+    // Ajout d'un champ de sécurité (nonce)
+    wp_nonce_field( 'sjb_sauvegarde_note_interne', 'sjb_note_nonce' );
+
+    ?>
+    <p>
+        <label for="sjb_note_interne">Ajouter une note visible uniquement par les administrateurs :</label>
+        <br>
+        <textarea id="sjb_note_interne" name="sjb_note_interne" rows="5" style="width:100%;"><?php echo esc_textarea( $note_actuelle ); ?></textarea>
+    </p>
+    <?php
+}
+
+/**
+ * 3. SAUVEGARDER LA DONNÉE
+ * Quand l'admin clique sur "Mettre à jour" le commentaire.
+ */
+function sjb_sauvegarder_note_interne( $comment_id ) {
+    // 1. Vérifier si notre champ nonce est là (sécurité)
+    if ( ! isset( $_POST['sjb_note_nonce'] ) ) {
+        return;
+    }
+    // 2. Vérifier la validité du nonce
+    if ( ! wp_verify_nonce( $_POST['sjb_note_nonce'], 'sjb_sauvegarde_note_interne' ) ) {
+        return;
+    }
+    // 3. Vérifier les permissions de l'utilisateur
+    if ( ! current_user_can( 'edit_comment', $comment_id ) ) {
+        return;
+    }
+
+    // 4. Sauvegarder ou supprimer la donnée
+    if ( isset( $_POST['sjb_note_interne'] ) ) {
+        $note = sanitize_textarea_field( $_POST['sjb_note_interne'] );
+        update_comment_meta( $comment_id, 'sjb_note_interne', $note );
+    }
+}
+add_action( 'edit_comment', 'sjb_sauvegarder_note_interne' );
+
+
+/**
+ * 1. CRÉER L'EN-TÊTE DE LA COLONNE
+ */
+function sjb_admin_ajouter_colonne_note( $columns ) {
+    // On ajoute la colonne 'sjb_note' au tableau des colonnes existantes
+    $columns['sjb_note'] = 'Note Interne';
+    return $columns;
+}
+add_filter( 'manage_edit-comments_columns', 'sjb_admin_ajouter_colonne_note' );
+
+/**
+ * 2. REMPLIR LA COLONNE AVEC LE CONTENU
+ */
+function sjb_admin_remplir_colonne_note( $column, $comment_id ) {
+    // On vérifie qu'on est bien dans notre colonne 'sjb_note'
+    if ( 'sjb_note' === $column ) {
+
+        // On récupère la note
+        $note = get_comment_meta( $comment_id, 'sjb_note_interne', true );
+
+        if ( ! empty( $note ) ) {
+            // S'il y a une note, on l'affiche avec un petit style "post-it"
+            echo '<div style="background-color: #fff9c4; color: #333; padding: 8px; border-radius: 4px; font-size: 12px; border: 1px solid #e0e0e0;">';
+            // esc_html pour la sécurité, nl2br pour conserver les sauts de ligne
+            echo nl2br( esc_html( $note ) );
+            echo '</div>';
+        } else {
+            // S'il n'y a rien, on affiche un petit tiret gris
+            echo '<span style="color:#ccc;">—</span>';
+        }
+    }
+}
+add_action( 'manage_comments_custom_column', 'sjb_admin_remplir_colonne_note', 10, 2 );
+
+/**
+ * 3. (OPTIONNEL) AJUSTER LA LARGEUR DE LA COLONNE
+ * Par défaut, WordPress peut écraser la colonne. Ceci force une largeur minimale.
+ */
+function sjb_admin_css_colonne_note() {
+    echo '<style>
+        .column-sjb_note { width: 20%; min-width: 150px; }
+    </style>';
+}
+add_action( 'admin_head', 'sjb_admin_css_colonne_note' );

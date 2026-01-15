@@ -465,3 +465,15 @@ function custom_home_posts_per_page($query) {
     }
 }
 add_action('pre_get_posts', 'custom_home_posts_per_page');
+
+
+// Hide comment count for non-moderators
+add_filter('get_comments_number', 'hide_comment_count', 10, 2);
+function hide_comment_count($count, $post_id) {
+    if (!current_user_can('moderate_comments')) {
+        return 0;
+    }
+    return $count;
+}
+
+
