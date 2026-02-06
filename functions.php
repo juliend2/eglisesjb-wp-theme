@@ -134,6 +134,10 @@ add_filter('siteorigin_panels_layout_classes', function ($classes) {
 });
 
 
+function cell_is_messe_en_ligne($row) {
+	return isset($row['cells'][0]['widgets'][0]['panels_info']['style']['id']) && $row['cells'][0]['widgets'][0]['panels_info']['style']['id'] === 'messe-en-ligne';
+}
+
 function cell_is_question_contact($row) {
 	return isset($row['cells'][0]['widgets'][0]['panels_info']['style']['id']) && $row['cells'][0]['widgets'][0]['panels_info']['style']['id'] === 'questions-contact-cta';
 }
@@ -146,7 +150,10 @@ function cell_is_question_contact($row) {
 add_filter('siteorigin_panels_row_classes', function ($classes, $row) {
 	// Append the classes that are needed at this point in the DOM:
 	$added = ['section', 'section-lg'];
-	if (cell_is_question_contact($row)) {
+	if (cell_is_messe_en_ligne($row)) {
+		$added = array_diff($added, ['section-lg']); // remove section-lg
+		$added = [...$added, 'bg-gray-800', 'text-center', 'context-dark'];
+	} elseif (cell_is_question_contact($row)) {
 		$added = array_diff($added, ['section-lg']); // remove section-lg
 		$added = [...$added, 'section-sm', 'text-center', 'bg-image context-dark'];
 	} elseif (isset($row['cells'][0]['widgets'][0]['blocs_historiques'])) {
