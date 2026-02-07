@@ -7,6 +7,14 @@ Initial settings:
 define('SJB_THEME_SLUG', 'eglisesjb');
 define('SJB_MAX_WIDTH', 1170);
 
+define("CATEGORY_150E_ANNIVERSAIRE", '150e-anniversaire');
+define("HEURES_CELEBRATIONS_DIMANCHE", '11 h');
+define("HEURES_CELEBRATIONS_DIMANCHE_HTML", str_replace(' ', '&nbsp;', HEURES_CELEBRATIONS_DIMANCHE));
+define("HEURES_CELEBRATIONS_SEMAINE", '17 h 30');
+define('HEURES_CELEBRATIONS_SEMAINE_HTML', str_replace(' ', '&nbsp;', HEURES_CELEBRATIONS_SEMAINE));
+define("RECOMMENCEMENT_MESSES_SEMAINE", "2025-08-28");
+define('CONTACT_FORM_TO_EMAIL', 'info@eglisesjb.com');
+
 if ( ! isset ( $content_width) ) {
     $content_width = SJB_MAX_WIDTH;
 }
